@@ -1,0 +1,875 @@
+openapi: 3.0.3
+info:
+  title: Ganes Tour API
+  description: API documentation for Paket Tour, Tour, Event, and Article endpoints.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Local server
+
+paths:
+  /login:
+    post:
+      summary: Admin Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          description: Logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Logged in successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/UserAdmin'
+                      token:
+                        type: string
+                        example: 1|abcdef...
+        '401':
+          description: Invalid credentials
+        '422':
+          description: Validation Error
+  /paket-tours:
+    get:
+      summary: Get all Paket Tours
+      responses:
+        '200':
+          description: A list of paket tours
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaketTour'
+    post:
+      summary: Create a new Paket Tour
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaketTourInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Paket Tour created successfully
+                  data:
+                    $ref: '#/components/schemas/PaketTour'
+        '422':
+          description: Validation Error
+  /paket-tours/{id}:
+    get:
+      summary: Get a specific Paket Tour
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/PaketTour'
+        '404':
+          description: Not found
+    post:
+      summary: Update a specific Paket Tour (Method Spoofing for Multipart)
+      description: Use POST with `_method=PUT` inside the body or query parameter to submit multipart/form-data.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: _method
+          schema:
+            type: string
+            enum: [PUT, PATCH]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaketTourInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Paket Tour updated successfully
+                  data:
+                    $ref: '#/components/schemas/PaketTour'
+        '404':
+          description: Not found
+    delete:
+      summary: Delete a specific Paket Tour
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+
+  /tours:
+    get:
+      summary: Get all Tours
+      responses:
+        '200':
+          description: A list of tours
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tour'
+    post:
+      summary: Create a new Tour
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TourInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Tour created successfully
+                  data:
+                    $ref: '#/components/schemas/Tour'
+  /tours/{id}:
+    get:
+      summary: Get a specific Tour
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Tour'
+        '404':
+          description: Not found
+    post:
+      summary: Update a specific Tour (Method Spoofing for Multipart)
+      description: Use POST with `_method=PUT` inside the body or query parameter to submit multipart/form-data.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: _method
+          schema:
+            type: string
+            enum: [PUT, PATCH]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TourInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Tour'
+        '404':
+          description: Not found
+    delete:
+      summary: Delete a specific Tour
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+
+  /events:
+    get:
+      summary: Get all Events
+      responses:
+        '200':
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+    post:
+      summary: Create a new Event
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EventInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Event created successfully
+                  data:
+                    $ref: '#/components/schemas/Event'
+  /events/{id}:
+    get:
+      summary: Get a specific Event
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Event'
+        '404':
+          description: Not found
+    post:
+      summary: Update a specific Event (Method Spoofing for Multipart)
+      description: Use POST with `_method=PUT` inside the body or query parameter to submit multipart/form-data.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: _method
+          schema:
+            type: string
+            enum: [PUT, PATCH]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EventInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Event'
+        '404':
+          description: Not found
+    delete:
+      summary: Delete a specific Event
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+
+  /articles:
+    get:
+      summary: Get all articles
+      responses:
+        '200':
+          description: A list of articles ordered by posting date
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Article'
+    post:
+      summary: Create an article
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleInput'
+      responses:
+        '201':
+          description: Article created successfully
+        '422':
+          description: Validation error
+
+  /articles/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get an article
+      responses:
+        '200':
+          description: Article detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Article'
+        '404':
+          description: Article not found
+    post:
+      summary: Update an article (multipart method override supported)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleInput'
+      responses:
+        '200':
+          description: Article updated successfully
+        '422':
+          description: Validation error
+    put:
+      summary: Update an article
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleInput'
+      responses:
+        '200':
+          description: Article updated successfully
+        '422':
+          description: Validation error
+    delete:
+      summary: Delete an article
+      responses:
+        '200':
+          description: Article deleted successfully
+        '404':
+          description: Article not found
+
+  /user-admins:
+    get:
+      summary: Get all User Admins
+      responses:
+        '200':
+          description: A list of user admins
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserAdmin'
+    post:
+      summary: Create a new User Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdminInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: User admin created successfully
+                  data:
+                    $ref: '#/components/schemas/UserAdmin'
+  /user-admins/{id}:
+    get:
+      summary: Get a specific User Admin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/UserAdmin'
+        '404':
+          description: Not found
+    put:
+      summary: Update a specific User Admin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdminInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: User admin updated successfully
+                  data:
+                    $ref: '#/components/schemas/UserAdmin'
+        '404':
+          description: Not found
+    delete:
+      summary: Delete a specific User Admin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+
+components:
+  schemas:
+    ImageResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        image_path:
+          type: string
+    PaketTour:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama_paket_tour:
+          type: string
+        kategori:
+          type: string
+          enum: [Travel Domestik, Travel Internasional]
+          description: Kategori perjalanan
+        deskripsi_singkat:
+          type: string
+        lokasi_wisata:
+          type: array
+          items:
+            type: string
+        destinasi_wisata:
+          type: array
+          items:
+            type: string
+        harga:
+          type: string
+        fasilitas:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponse'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PaketTourInput:
+      type: object
+      properties:
+        nama_paket_tour:
+          type: string
+        kategori:
+          type: string
+          enum: [Travel Domestik, Travel Internasional]
+          description: Kategori perjalanan
+        deskripsi_singkat:
+          type: string
+        'lokasi_wisata[]':
+          type: array
+          items:
+            type: string
+          description: Send multiple string arrays, or JSON
+        'destinasi_wisata[]':
+          type: array
+          items:
+            type: string
+        harga:
+          type: number
+        'fasilitas[]':
+          type: array
+          items:
+            type: string
+        'gambar[]':
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Multiple image upload
+    Tour:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama_tour:
+          type: string
+        kategori:
+          type: string
+          enum: [Travel Domestik, Travel Internasional]
+          description: Kategori perjalanan
+        deskripsi_singkat:
+          type: string
+        lokasi_wisata:
+          type: string
+        destinasi_wisata:
+          type: string
+        harga:
+          type: string
+        fasilitas:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponse'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TourInput:
+      type: object
+      properties:
+        nama_tour:
+          type: string
+        kategori:
+          type: string
+          enum: [Travel Domestik, Travel Internasional]
+          description: Kategori perjalanan
+        deskripsi_singkat:
+          type: string
+        lokasi_wisata:
+          type: string
+        destinasi_wisata:
+          type: string
+        harga:
+          type: number
+        'fasilitas[]':
+          type: array
+          items:
+            type: string
+        'gambar[]':
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Multiple image upload
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul_event:
+          type: string
+        gambar:
+          type: string
+        deskripsi_event:
+          type: string
+        itinerary:
+          type: string
+        fasilitas:
+          type: array
+          items:
+            type: string
+        syarat_dan_ketentuan:
+          type: string
+        harga_asli:
+          type: string
+        harga_promo:
+          type: string
+        tanggal:
+          type: array
+          items:
+            type: string
+            format: date
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    EventInput:
+      type: object
+      properties:
+        judul_event:
+          type: string
+        deskripsi_event:
+          type: string
+        itinerary:
+          type: string
+        'fasilitas[]':
+          type: array
+          items:
+            type: string
+        syarat_dan_ketentuan:
+          type: string
+        harga_asli:
+          type: number
+        harga_promo:
+          type: number
+        'tanggal[]':
+          type: array
+          items:
+            type: string
+            format: date
+        gambar:
+          type: string
+          format: binary
+          description: Single image upload
+    Article:
+      type: object
+      required:
+        - id
+        - judul_artikel
+        - deskripsi_singkat
+        - tanggal_posting
+        - isi_artikel
+      properties:
+        id:
+          type: integer
+        judul_artikel:
+          type: string
+        deskripsi_singkat:
+          type: string
+        tanggal_posting:
+          type: string
+          format: date
+        gambar:
+          type: string
+          nullable: true
+          description: Relative path to the uploaded image in public storage
+        isi_artikel:
+          type: string
+          description: Sanitized HTML content generated by the Tiptap rich text editor. Plain-text content from older articles is also supported.
+          example: '<h2>Rekomendasi Destinasi Wisata di Bali</h2><p>Bali menawarkan perpaduan budaya, pantai, dan alam.</p><ul><li>Ubud untuk budaya</li><li>Uluwatu untuk sunset</li></ul><p><strong>Pesan perjalanan Anda bersama Ganes Tour.</strong></p>'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ArticleInput:
+      type: object
+      required:
+        - judul_artikel
+        - deskripsi_singkat
+        - tanggal_posting
+        - gambar
+        - isi_artikel
+      properties:
+        judul_artikel:
+          type: string
+        deskripsi_singkat:
+          type: string
+        tanggal_posting:
+          type: string
+          format: date
+        gambar:
+          type: string
+          format: binary
+          description: Single image upload (JPEG, PNG, GIF, or WebP; max 5 MB)
+        isi_artikel:
+          type: string
+          description: HTML content from Tiptap. Supported formatting includes headings, bold, italic, underline, strike, lists, blockquote, code, code block, links, alignment, and horizontal rule.
+          example: '<h2>Rekomendasi Destinasi Wisata di Bali</h2><p>Bali menawarkan perpaduan budaya, pantai, dan alam.</p><ol><li>Kunjungi Ubud.</li><li>Nikmati sunset di Uluwatu.</li></ol>'
+    UserAdmin:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UserAdminInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
